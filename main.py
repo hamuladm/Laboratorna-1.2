@@ -2,8 +2,8 @@
 Laboratorna 1
 '''
 
-import folium
 import argparse
+import folium
 import pandas as pd
 from haversine import haversine
 from geopy.geocoders import Nominatim
@@ -46,10 +46,10 @@ def generate_map(year: int, latitude: float, longitude: float, path: str) -> 0:
     geolocator = Nominatim(user_agent = "Map_App",)
     user_coords = (latitude, longitude)
 
-    df = pd.read_csv(path, sep = ';')
-    df = df[df.Year == year]
+    df_1 = pd.read_csv(path, sep = ';')
+    df_1 = df_1[df_1.Year == year]
 
-    locations = list(df.Location)[:100]
+    locations = list(df_1.Location)[:100]
 
     distances = []
     for location in locations:
@@ -70,10 +70,11 @@ def generate_map(year: int, latitude: float, longitude: float, path: str) -> 0:
     least_dist = sorted(list(havers_dist.keys()))[:10]
 
     map = folium.Map()
-    fg = folium.FeatureGroup(name = '10 nearest films')
+    fg_0 = folium.FeatureGroup(name = '10 nearest films')
     for elem in least_dist:
-        fg.add_child(
-            folium.Marker(location = [float(havers_dist[elem][1][0]), float(havers_dist[elem][1][1])],
+        fg_0.add_child(
+            folium.Marker(location = [float(havers_dist[elem][1][0]),
+                                       float(havers_dist[elem][1][1])],
                           icon = folium.Icon())
         )
 
@@ -98,10 +99,10 @@ def generate_map(year: int, latitude: float, longitude: float, path: str) -> 0:
             )
         )
 
-    map.add_child(fg)
+    map.add_child(fg_0)
     map.add_child(fg_1)
     map.add_child(folium.LayerControl())
-    map.save('Map_films_main_1.html')
+    map.save('Map_films_main_2.html')
 
     return 0
 
