@@ -70,3 +70,6 @@ def cut_dataset(path: str) -> pd.DataFrame:
     )
 
     return df
+
+if __name__ == '__main__':
+    cut_dataset(read_dataset('locations.list'))
