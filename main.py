@@ -49,7 +49,7 @@ def generate_map(year: int, latitude: float, longitude: float, path: str) -> 0:
     df = pd.read_csv(path, sep = ';')
     df = df[df.Year == year]
 
-    locations = list(df.Location)[:25]
+    locations = list(df.Location)[:100]
 
     distances = []
     for location in locations:
@@ -101,7 +101,7 @@ def generate_map(year: int, latitude: float, longitude: float, path: str) -> 0:
     map.add_child(fg)
     map.add_child(fg_1)
     map.add_child(folium.LayerControl())
-    map.save('Map_films_main.html')
+    map.save('Map_films_main_1.html')
 
     return 0
 
