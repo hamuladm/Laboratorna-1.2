@@ -3,17 +3,10 @@ Laboratorna 1
 '''
 
 import folium
-import geopy
-import geocoder
 import argparse
 import pandas as pd
-import numpy as np
-from typing import List
-import re
 from haversine import haversine
-from collections import Counter
 from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
 from geopy.exc import GeocoderUnavailable
 
 
@@ -45,12 +38,12 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def generate_map(year: int, latitude: int, longitude, path: str) -> 0:
+def generate_map(year: int, latitude: float, longitude: float, path: str) -> 0:
     '''
-    (int, int, int, str) -> 0
+    (int, float, float, str) -> 0
+    Generates HTML-map
     '''
     geolocator = Nominatim(user_agent = "Map_App",)
-    geocode = RateLimiter(geolocator.geocode, min_delay_seconds = 1)
     user_coords = (latitude, longitude)
 
     df = pd.read_csv(path, sep = ';')
@@ -58,10 +51,7 @@ def generate_map(year: int, latitude: int, longitude, path: str) -> 0:
 
     locations = list(df.Location)[:25]
 
-    #return locations
-
     distances = []
-
     for location in locations:
         try:
             addr = geolocator.geocode(location)
@@ -72,43 +62,48 @@ def generate_map(year: int, latitude: int, longitude, path: str) -> 0:
         except GeocoderUnavailable:
             continue
 
-    # addr = geolocator.geocode(locations[0])
-    # distances.append((addr.latitude, addr.longitude))
-
-    #return distances
     havers_dist = {}
-
     for place in distances:
         lenght = haversine(user_coords, place)
         havers_dist[lenght] = [user_coords, place]
 
-    # return havers_dist
-
     least_dist = sorted(list(havers_dist.keys()))[:10]
 
-    # return least_dist
-
-
     map = folium.Map()
-
-    fg = folium.FeatureGroup(
-        name = 'Films'
-    )
-
+    fg = folium.FeatureGroup(name = '10 nearest films')
     for elem in least_dist:
         fg.add_child(
             folium.Marker(location = [float(havers_dist[elem][1][0]), float(havers_dist[elem][1][1])],
                           icon = folium.Icon())
         )
 
-    map.add_child(fg)
+    uni_coords = [
+        [50.463231, 30.519054],
+        [50.445211, 30.459539],
+        [49.841684, 24.030131],
+        [49.993499, 36.233956],
+        [50.450459, 30.457221],
+        [50.323748, 26.518328],
+        [48.288187, 25.936838],
+        [48.905042, 24.719944],
+        [49.221831, 28.414686],
+        [46.654441, 32.623493]
+    ]
+    fg_1 = folium.FeatureGroup(name = 'Top-10 ukrainian universities')
+    for uni in uni_coords:
+        fg_1.add_child(
+            folium.Marker(
+            location = uni,
+            icon = folium.Icon(color = 'red')
+            )
+        )
 
+    map.add_child(fg)
+    map.add_child(fg_1)
     map.add_child(folium.LayerControl())
-    map.save('Map_films.html')
+    map.save('Map_films_main.html')
 
     return 0
-
-generate_map(2000, 49.83826, 24.02324, 'data_cut_test.csv')
 
 
 if __name__ == '__main__':
